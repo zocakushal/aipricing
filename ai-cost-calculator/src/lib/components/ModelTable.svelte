@@ -106,59 +106,198 @@
 
 <style>
   .table-container {
-    overflow-x: auto; /* Allow horizontal scrolling on smaller screens */
-    margin-top: 1.5em;
+    overflow-x: auto;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px; /* Consistent with other cards */
-    background-color: var(--card-bg); /* Table itself as a card */
+    border-radius: 12px;
     box-shadow: var(--shadow);
+    transition: all 0.3s ease;
   }
+
+  .table-container:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
   table {
     width: 100%;
     border-collapse: collapse;
-    /* font-size: 0.9em; /* Inherit from body or specific needs */
+    font-size: 0.875rem;
   }
+
   th, td {
-    border-bottom: 1px solid var(--border-color); /* Only bottom border for rows */
-    border-left: 1px solid var(--border-color); /* Vertical borders for cells */
-    padding: 0.8em 1em; /* Increased padding */
+    padding: 1rem;
     text-align: left;
-    vertical-align: top;
-    /* color: var(--text-color); /* Inherited */
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-light);
+    transition: all 0.2s ease;
   }
+
   th:first-child, td:first-child {
-    border-left: none; /* Remove left border for the first cell in a row */
+    padding-left: 1.5rem;
   }
-  thead tr {
-    border-bottom: 2px solid var(--border-color); /* Thicker border for header row */
+
+  th:last-child, td:last-child {
+    padding-right: 1.5rem;
   }
+
+  thead {
+    background: linear-gradient(135deg, var(--table-header-bg), var(--background-secondary));
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
   th {
     cursor: pointer;
-    background-color: var(--table-header-bg);
-    user-select: none; 
-    font-weight: 600; /* From Inter font */
-    white-space: nowrap; /* Prevent header text from wrapping */
+    user-select: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-color);
+    white-space: nowrap;
+    position: relative;
+    transition: all 0.2s ease;
   }
+
   th:hover {
-    background-color: var(--table-row-hover-bg); /* Use hover bg for header too */
-  }
-  tbody tr:hover {
     background-color: var(--table-row-hover-bg);
+    color: var(--primary-color);
+  }
+
+  th:active {
+    transform: translateY(1px);
+  }
+
+  tbody tr {
+    transition: all 0.2s ease;
     cursor: pointer;
   }
-  td {
-    word-break: break-word;
+
+  tbody tr:hover {
+    background-color: var(--table-row-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
+
+  tbody tr:active {
+    transform: translateY(0);
+  }
+
+  td {
+    color: var(--text-color);
+    font-weight: 400;
+  }
+
+  /* Model name styling */
+  tbody tr td:first-child {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  /* Provider styling */
+  tbody tr td:nth-child(2) {
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* Cost columns styling */
+  tbody tr td:nth-child(3),
+  tbody tr td:nth-child(4) {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+
+  /* Speed and Quality badges */
+  tbody tr td:nth-child(7),
+  tbody tr td:nth-child(8) {
+    font-weight: 600;
+  }
+
   .no-models-message {
     text-align: center;
-    padding: 2em;
-    color: var(--secondary-color, #6c757d); /* Use secondary color for this message */
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 1rem;
   }
+
+  .no-models-message::before {
+    content: '🤖';
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
   .docs-link {
-    color: var(--link-color);
-    text-decoration: underline;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
   }
+
   .docs-link:hover {
-    color: var(--link-hover-color);
+    color: white;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  /* Sort indicators */
+  th::after {
+    content: '';
+    margin-left: 0.5rem;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+
+  th:hover::after {
+    opacity: 1;
+  }
+
+  /* Responsive design */
+  @media (max-width: 1200px) {
+    th, td {
+      padding: 0.75rem 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    th:first-child, td:first-child {
+      padding-left: 1rem;
+    }
+
+    th:last-child, td:last-child {
+      padding-right: 1rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .table-container {
+      border-radius: 8px;
+    }
+
+    th, td {
+      padding: 0.5rem 0.25rem;
+      font-size: 0.75rem;
+    }
+
+    th:first-child, td:first-child {
+      padding-left: 0.75rem;
+    }
+
+    th:last-child, td:last-child {
+      padding-right: 0.75rem;
+    }
+
+    /* Hide some columns on mobile */
+    th:nth-child(5), td:nth-child(5), /* Context */
+    th:nth-child(6), td:nth-child(6), /* Capabilities */
+    th:nth-child(9), td:nth-child(9)  /* Updated */ {
+      display: none;
+    }
   }
 </style>

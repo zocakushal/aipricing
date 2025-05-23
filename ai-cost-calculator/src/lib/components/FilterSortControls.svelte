@@ -129,114 +129,195 @@
 
 <style>
   .filter-controls-wrapper {
-    padding: 1.5em;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-bottom: 1.5em;
-    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
     box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .filter-controls-wrapper:hover {
+    box-shadow: var(--shadow-lg);
   }
 
   .filter-controls-wrapper h3 {
-    margin-top: 0;
-    margin-bottom: 1.2em;
+    margin: 0 0 1.5rem 0;
     text-align: center;
     color: var(--text-color);
     font-weight: 600;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .filter-controls-wrapper h3::before {
+    content: '🔍';
+    font-size: 1.2rem;
   }
 
   .filter-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Adjusted minmax */
-    gap: 1.2em; /* Slightly increased gap */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
   }
 
-  .filter-item label, .filter-group label { /* General label styling */
-    display: block; /* Ensure label takes full width for spacing */
-    margin-bottom: 0.5em; /* Increased spacing */
-    font-weight: 500; /* Inter font weight */
-    font-size: 0.9em;
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-item label {
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--text-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .filter-item input[type="text"],
   .filter-item input[type="number"],
   .filter-item select {
     width: 100%;
-    padding: 0.75em; /* Increased padding for better touch targets */
-    border: 1px solid var(--input-border-color);
-    border-radius: 6px; /* Slightly more rounded */
-    box-sizing: border-box;
+    padding: 0.75rem;
+    border: 2px solid var(--input-border-color);
+    border-radius: 8px;
     background-color: var(--input-bg);
     color: var(--text-color);
-    font-size: 0.95em; /* Ensure text is readable */
-    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
   }
+
   .filter-item input[type="text"]:focus,
   .filter-item input[type="number"]:focus,
   .filter-item select:focus {
     border-color: var(--input-focus-border-color);
     box-shadow: var(--input-focus-box-shadow);
     outline: none;
+    transform: translateY(-1px);
+  }
+
+  .filter-item input[type="text"]:hover,
+  .filter-item input[type="number"]:hover,
+  .filter-item select:hover {
+    border-color: var(--primary-light);
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .filter-group input[type="number"] {
-    margin-bottom: 0.5em; 
-  }
-  .filter-group input[type="number"]:last-child {
     margin-bottom: 0;
   }
 
+  .filter-checkbox-group {
+    display: flex;
+    flex-direction: column;
+  }
+
   .filter-checkbox-group h4 {
-    font-size: 0.9em;
-    font-weight: 500;
-    margin-bottom: 0.6em;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
     color: var(--text-color);
   }
 
-  .checkbox-label { /* Replaced .filter-checkbox-group label for specificity */
-    display: flex; 
+  .checkbox-label {
+    display: flex !important;
     align-items: center;
-    margin-bottom: 0.4em;
-    font-weight: 400; /* Inter font weight */
-    font-size: 0.9em; /* Consistent font size */
-    color: var(--text-color);
+    margin-bottom: 0.5rem !important;
+    padding: 0.5rem;
+    border-radius: 6px;
     cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 400 !important;
+    font-size: 0.875rem !important;
+  }
+
+  .checkbox-label:hover {
+    background-color: var(--background-secondary);
   }
 
   .checkbox-label input[type="checkbox"] {
-    margin-right: 0.6em;
-    accent-color: var(--primary-color); /* Style checkbox color */
-    width: 1.1em; /* Custom size */
-    height: 1.1em;
+    margin-right: 0.75rem;
+    accent-color: var(--primary-color);
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 4px;
   }
-  .checkbox-label .checkbox-text {
+
+  .checkbox-text {
     line-height: 1.3;
+    color: var(--text-color);
   }
 
   .capabilities-filter .checkbox-list {
-    max-height: 160px; 
+    max-height: 200px;
     overflow-y: auto;
-    border: 1px solid var(--input-border-color);
-    padding: 0.8em;
-    border-radius: 6px;
-    background-color: var(--input-bg); /* Consistent background */
+    border: 2px solid var(--input-border-color);
+    padding: 0.75rem;
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    transition: border-color 0.2s ease;
+  }
+
+  .capabilities-filter .checkbox-list:hover {
+    border-color: var(--primary-light);
   }
 
   .clear-filters-btn {
     display: block;
-    margin: 1.8em auto 0;
-    padding: 0.8em 1.5em;
-    background-color: var(--button-secondary-bg); /* Use secondary button style */
-    color: var(--button-secondary-text-color);
-    border: 1px solid var(--border-color); /* Add border for definition */
-    border-radius: 6px;
+    margin: 2rem auto 0;
+    padding: 0.875rem 2rem;
+    background: linear-gradient(135deg, var(--error-color), #dc2626);
+    color: white;
+    border: none;
+    border-radius: 50px;
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
   }
+
   .clear-filters-btn:hover {
-    background-color: var(--button-secondary-hover-bg);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, #dc2626, var(--error-color));
+  }
+
+  .clear-filters-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .filter-controls-wrapper {
+      padding: 1rem;
+    }
+
+    .filter-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .capabilities-filter .checkbox-list {
+      max-height: 150px;
+    }
+
+    .clear-filters-btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.8rem;
+    }
   }
 </style>

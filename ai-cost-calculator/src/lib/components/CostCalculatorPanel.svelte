@@ -66,122 +66,185 @@
 
   <div class="presets-section">
     <div class="presets-group">
-      <h4>Bulk Usage Presets:</h4>
-      {#each Object.entries(usagePresets) as [presetName, presetDetails] (presetName)}
-        <button class="preset-button" on:click={() => applyUsagePreset(presetName as keyof typeof usagePresets)}>
-          {presetName} ({presetDetails.requests.toLocaleString()} req)
-        </button>
-      {/each}
+      <h4>Bulk Usage Presets</h4>
+      <div class="preset-buttons">
+        {#each Object.entries(usagePresets) as [presetName, presetDetails] (presetName)}
+          <button class="preset-button" on:click={() => applyUsagePreset(presetName as keyof typeof usagePresets)}>
+            {presetName} ({presetDetails.requests.toLocaleString()} req)
+          </button>
+        {/each}
+      </div>
     </div>
 
     <div class="presets-group">
-      <h4>Single Request Scenario Presets:</h4>
-      {#each Object.entries(scenarioPresets) as [presetName] (presetName)}
-        <button class="preset-button" on:click={() => applyScenarioPreset(presetName as keyof typeof scenarioPresets)}>
-          {presetName}
-        </button>
-      {/each}
+      <h4>Single Request Scenario Presets</h4>
+      <div class="preset-buttons">
+        {#each Object.entries(scenarioPresets) as [presetName] (presetName)}
+          <button class="preset-button" on:click={() => applyScenarioPreset(presetName as keyof typeof scenarioPresets)}>
+            {presetName}
+          </button>
+        {/each}
+      </div>
       {#if scenarioNote}
-        <p class="scenario-note"><small>{scenarioNote}</small></p>
+        <div class="scenario-note">
+          <small>{scenarioNote}</small>
+        </div>
       {/if}
     </div>
   </div>
 </div>
 
 <style>
-  .calculator-panel { 
-    border: 1px solid var(--border-color); 
-    padding: 1.5em; 
-    border-radius: 8px; 
-    margin-top: 1.5em;
-    background-color: var(--card-bg);
+  .calculator-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
     box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .calculator-panel:hover {
+    box-shadow: var(--shadow-lg);
   }
 
   .manual-inputs {
-    margin-bottom: 1.5em;
+    margin-bottom: 2rem;
   }
 
-  .input-group { 
+  .input-group {
     display: flex;
-    flex-wrap: wrap; /* Allow wrapping on small screens */
-    align-items: center;
-    margin-bottom: 1em; 
+    flex-direction: column;
+    margin-bottom: 1.5rem;
   }
 
-  .input-group label { 
-    flex-basis: 220px; /* Fixed basis for label */
-    margin-right: 1em; 
-    font-size: 0.95em;
-    font-weight: 500;
+  .input-group label {
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--text-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .input-group input[type="number"] {
-    flex-grow: 1; /* Allow input to take remaining space */
-    min-width: 100px; /* Minimum width for input */
-    padding: 0.75em;
-    border: 1px solid var(--input-border-color);
-    border-radius: 6px;
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--input-border-color);
+    border-radius: 8px;
     background-color: var(--input-bg);
     color: var(--text-color);
-    font-size: 0.95em;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
   }
+
   .input-group input[type="number"]:focus {
     border-color: var(--input-focus-border-color);
     box-shadow: var(--input-focus-box-shadow);
     outline: none;
+    transform: translateY(-1px);
+  }
+
+  .input-group input[type="number"]:hover {
+    border-color: var(--primary-light);
   }
 
   .presets-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5em;
-  }
-  
-  .presets-group { 
-    padding-top: 1em;
-    border-top: 1px solid var(--border-color); /* Use solid border */
-  }
-  .presets-group:first-child { /* No top border for the first group if it's the first in a row */
-    /* border-top: none; /* This might need adjustment based on grid layout */
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
+  .presets-group {
+    padding: 1.5rem;
+    background: var(--background-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border-light);
+  }
 
-  .presets-group h4 { 
-    margin-top: 0; /* Remove margin if padding-top is on group */
-    margin-bottom: 1em; 
-    font-size: 1.05em;
+  .presets-group h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .preset-button { /* Changed from .presets-group button */
-    margin-right: 0.5em; 
-    margin-bottom: 0.5em; 
-    padding: 0.7em 1.2em; /* Slightly larger padding */
-    border: none; /* Remove border for primary buttons if desired */
-    background-color: var(--button-bg);
-    color: var(--button-text-color);
-    border-radius: 6px;
+  .presets-group h4::before {
+    content: '⚡';
+    font-size: 1.2rem;
+  }
+
+  .preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .preset-button {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
   }
 
   .preset-button:hover {
-    background-color: var(--button-hover-bg);
-    transform: translateY(-1px);
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
   }
 
-  .scenario-note { 
-    margin-top: 1em;
-    font-style: italic; 
-    color: var(--secondary-color, #555); 
-    font-size: 0.9em;
-    background-color: var(--background-color); /* Match main background or a lighter card variant */
-    padding: 0.8em;
+  .preset-button:active {
+    transform: translateY(0);
+  }
+
+  .scenario-note {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background-color: var(--card-bg);
     border-radius: 6px;
-    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Enhanced responsive design */
+  @media (max-width: 1024px) {
+    .presets-section {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .calculator-panel {
+      padding: 1rem;
+    }
+
+    .input-group {
+      margin-bottom: 1rem;
+    }
+
+    .preset-buttons {
+      gap: 0.5rem;
+    }
+
+    .preset-button {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+    }
   }
 </style>

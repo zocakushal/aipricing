@@ -108,76 +108,323 @@
 </script>
 
 <ThemeToggle />
-<main>
-  <h1>AI Model Cost Calculator</h1>
-  
-  <FilterSortControls {modelPricing} on:filtersChanged={handleFiltersChanged} />
-  
-  <ModelTable models={filteredDisplayModels} on:modelSelected={handleModelSelected} />
 
-  {#if $selectedModel}
-    <div class="selected-model-details card">
-      <h2>Selected Model: {$selectedModel.name}</h2>
-      <p>Provider: {$selectedModel.provider}</p>
-      {#if $modelNotes}
-        <p class="notes"><small><em>Notes: {$modelNotes}</em></small></p>
-      {/if}
+<main class="container">
+  <!-- Hero Section -->
+  <header class="hero animate-fade-in">
+    <h1 class="hero-title">AI Model Cost Calculator</h1>
+    <p class="hero-subtitle">Compare pricing across different AI models and optimize your usage costs</p>
+  </header>
+
+  <!-- Quick Stats -->
+  <div class="stats-grid animate-fade-in">
+    <div class="stat-card">
+      <div class="stat-number">{filteredDisplayModels.length}</div>
+      <div class="stat-label">Models Available</div>
     </div>
-  {/if}
-  
-  <CostCalculatorPanel 
-    bind:inputTokens={$inputTokens} 
-    bind:outputTokens={$outputTokens} 
-    bind:numberOfRequests={$numberOfRequests} 
-    on:valueChange={handleValueChange} 
-  />
-  
-  <CostDisplay cost={$calculatedCost} /> 
+    <div class="stat-card">
+      <div class="stat-number">${$calculatedCost.toFixed(4)}</div>
+      <div class="stat-label">Estimated Cost</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{$numberOfRequests.toLocaleString()}</div>
+      <div class="stat-label">Requests</div>
+    </div>
+  </div>
 
-  <CostCharts chartData={chartDisplayData} /> 
+  <!-- Main Content Grid -->
+  <div class="main-grid">
+    <!-- Left Column: Calculator & Model Selection -->
+    <div class="left-column">
+      {#if $selectedModel}
+        <div class="selected-model-card animate-slide-in">
+          <div class="model-header">
+            <div class="model-info">
+              <h3 class="model-name">{$selectedModel.name}</h3>
+              <div class="model-provider">{$selectedModel.provider}</div>
+            </div>
+            <div class="model-rating">
+              <div class="quality-badge">
+                {$selectedModel.qualityRating === 0 ? 'N/A' : `${$selectedModel.qualityRating}/5`}
+              </div>
+            </div>
+          </div>
+          
+          <div class="pricing-info">
+            <div class="price-item">
+              <span class="price-label">Input</span>
+              <span class="price-value">${$selectedModel.inputCostPerMillionTokens.toFixed(2)}/M tokens</span>
+            </div>
+            <div class="price-item">
+              <span class="price-label">Output</span>
+              <span class="price-value">${$selectedModel.outputCostPerMillionTokens.toFixed(2)}/M tokens</span>
+            </div>
+          </div>
+          
+          {#if $modelNotes}
+            <div class="model-notes">
+              <small>{$modelNotes}</small>
+            </div>
+          {/if}
+        </div>
+      {/if}
+      
+      <CostCalculatorPanel 
+        bind:inputTokens={$inputTokens} 
+        bind:outputTokens={$outputTokens} 
+        bind:numberOfRequests={$numberOfRequests} 
+        on:valueChange={handleValueChange} 
+      />
+      
+      <CostDisplay cost={$calculatedCost} />
+    </div>
+
+    <!-- Right Column: Filters & Visualization -->
+    <div class="right-column">
+      <FilterSortControls {modelPricing} on:filtersChanged={handleFiltersChanged} />
+      <CostCharts chartData={chartDisplayData} />
+    </div>
+  </div>
+
+  <!-- Models Table -->
+  <div class="table-section animate-fade-in">
+    <div class="section-header">
+      <h2>Available Models</h2>
+      <p class="text-secondary">Click on any model to select it for calculations</p>
+    </div>
+    <ModelTable models={filteredDisplayModels} on:modelSelected={handleModelSelected} />
+  </div>
 </main>
 
 <style>
   main {
-    max-width: 90%; 
-    margin: 2em auto;
-    padding: 1.5em; /* Increased padding slightly */
-    border-radius: 8px;
-    /* Background and text color are inherited from body (app.css) */
-    /* Border and shadow could be applied if main is considered a "card" */
-    /* For now, let's assume main is just a layout container, not a card itself */
+    padding: 2rem 0;
+    min-height: 100vh;
   }
 
-  h1 {
-    color: var(--text-color); /* Explicitly use text-color for clarity */
+  /* Hero Section */
+  .hero {
     text-align: center;
-    margin-bottom: 1.5em;
-    font-weight: 600; /* From Inter font */
+    margin-bottom: 3rem;
+    padding: 2rem 0;
   }
 
-  .selected-model-details { /* This is treated as a card */
-    margin: 1.5em 0; /* Increased margin */
-    padding: 1.5em;  /* Increased padding */
-    background-color: var(--card-bg); 
+  .hero-title {
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    font-weight: 800;
+  }
+
+  .hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px; /* Consistent border-radius */
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
     box-shadow: var(--shadow);
+    transition: all 0.3s ease;
   }
 
-  .selected-model-details h2 {
-    margin-top: 0;
-    margin-bottom: 0.5em; /* Added margin */
-    color: var(--text-color); /* Ensure heading color matches theme */
-    font-weight: 500; /* From Inter font */
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
-  
-  .selected-model-details p {
-    margin-bottom: 0.3em; /* Consistent paragraph spacing */
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Main Grid Layout */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 1024px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+  }
+
+  .left-column,
+  .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Selected Model Card */
+  .selected-model-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+  }
+
+  .model-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .model-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
     color: var(--text-color);
   }
 
-  .selected-model-details p.notes {
-    font-size: 0.9em;
-    opacity: 0.85; /* Slightly muted notes */
+  .model-provider {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+  }
+
+  .quality-badge {
+    background: var(--accent-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .pricing-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .price-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--background-secondary);
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .price-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+  }
+
+  .price-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .model-notes {
+    padding: 0.75rem;
+    background: var(--background-secondary);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+  }
+
+  .model-notes small {
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Table Section */
+  .table-section {
+    margin-top: 2rem;
+  }
+
+  .section-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .section-header h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem 0;
+    }
+
+    .hero {
+      margin-bottom: 2rem;
+      padding: 1rem 0;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .main-grid {
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .pricing-info {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
