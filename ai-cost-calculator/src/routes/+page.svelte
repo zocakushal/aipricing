@@ -116,7 +116,7 @@
   <ModelTable models={filteredDisplayModels} on:modelSelected={handleModelSelected} />
 
   {#if $selectedModel}
-    <div class="selected-model-details card"> {/* Added 'card' class */}
+    <div class="selected-model-details card">
       <h2>Selected Model: {$selectedModel.name}</h2>
       <p>Provider: {$selectedModel.provider}</p>
       {#if $modelNotes}
