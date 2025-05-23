@@ -68,7 +68,12 @@
 </script>
 
 <div class="filter-controls-wrapper">
-  <h3>Advanced Filters</h3>
+  <div class="filter-header">
+    <h3>🔍 Advanced Filters</h3>
+    <div class="filter-stats">
+      <span class="results-count">{modelPricing.length} models</span>
+    </div>
+  </div>
   <div class="filter-grid">
     <div class="filter-item">
       <label for="search-term">Search:</label>
@@ -141,21 +146,40 @@
     box-shadow: var(--shadow-lg);
   }
 
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-light);
+  }
+
   .filter-controls-wrapper h3 {
-    margin: 0 0 1.5rem 0;
-    text-align: center;
+    margin: 0;
     color: var(--text-color);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.25rem;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
   }
 
-  .filter-controls-wrapper h3::before {
-    content: '🔍';
-    font-size: 1.2rem;
+  .filter-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .results-count {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
   .filter-grid {

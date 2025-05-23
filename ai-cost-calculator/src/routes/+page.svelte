@@ -134,7 +134,7 @@
 
   <!-- Main Content Grid -->
   <div class="main-grid">
-    <!-- Left Column: Calculator & Model Selection -->
+    <!-- Left Column: Calculator & Cost Display -->
     <div class="left-column">
       {#if $selectedModel}
         <div class="selected-model-card animate-slide-in">
@@ -142,27 +142,41 @@
             <div class="model-info">
               <h3 class="model-name">{$selectedModel.name}</h3>
               <div class="model-provider">{$selectedModel.provider}</div>
+              <div class="model-capabilities">
+                {Array.isArray($selectedModel.keyCapabilities) ? $selectedModel.keyCapabilities.slice(0, 3).join(', ') : $selectedModel.keyCapabilities}
+              </div>
             </div>
-            <div class="model-rating">
+            <div class="model-badges">
               <div class="quality-badge">
-                {$selectedModel.qualityRating === 0 ? 'N/A' : `${$selectedModel.qualityRating}/5`}
+                ⭐ {$selectedModel.qualityRating === 0 ? 'N/A' : `${$selectedModel.qualityRating}/5`}
+              </div>
+              <div class="speed-badge {$selectedModel.speedRating.toLowerCase()}">
+                {$selectedModel.speedRating === 'Fast' ? '⚡' : $selectedModel.speedRating === 'Medium' ? '🚀' : '🐌'} {$selectedModel.speedRating}
               </div>
             </div>
           </div>
           
           <div class="pricing-info">
             <div class="price-item">
-              <span class="price-label">Input</span>
-              <span class="price-value">${$selectedModel.inputCostPerMillionTokens.toFixed(2)}/M tokens</span>
+              <span class="price-label">💬 Input</span>
+              <span class="price-value">${$selectedModel.inputCostPerMillionTokens.toFixed(2)}/M</span>
+              <span class="price-subtext">tokens</span>
             </div>
             <div class="price-item">
-              <span class="price-label">Output</span>
-              <span class="price-value">${$selectedModel.outputCostPerMillionTokens.toFixed(2)}/M tokens</span>
+              <span class="price-label">📤 Output</span>
+              <span class="price-value">${$selectedModel.outputCostPerMillionTokens.toFixed(2)}/M</span>
+              <span class="price-subtext">tokens</span>
+            </div>
+            <div class="price-item context-window">
+              <span class="price-label">📄 Context</span>
+              <span class="price-value">{($selectedModel.contextWindow / 1000).toFixed(0)}K</span>
+              <span class="price-subtext">tokens</span>
             </div>
           </div>
           
           {#if $modelNotes}
             <div class="model-notes">
+              <div class="notes-header">📝 Notes</div>
               <small>{$modelNotes}</small>
             </div>
           {/if}
@@ -181,8 +195,10 @@
 
     <!-- Right Column: Filters & Visualization -->
     <div class="right-column">
-      <FilterSortControls {modelPricing} on:filtersChanged={handleFiltersChanged} />
-      <CostCharts chartData={chartDisplayData} />
+      <div class="filters-chart-container">
+        <FilterSortControls {modelPricing} on:filtersChanged={handleFiltersChanged} />
+        <CostCharts chartData={chartDisplayData} />
+      </div>
     </div>
   </div>
 
@@ -200,6 +216,37 @@
   main {
     padding: 2rem 0;
     min-height: 100vh;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out;
   }
 
   /* Hero Section */
@@ -294,52 +341,120 @@
     gap: 1.5rem;
   }
 
+  .filters-chart-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: fit-content;
+  }
+
   /* Selected Model Card */
   .selected-model-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: linear-gradient(135deg, var(--card-bg) 0%, var(--background-secondary) 100%);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
     padding: 1.5rem;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-lg);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .selected-model-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  }
+
+  .selected-model-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-color);
   }
 
   .model-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
   }
 
   .model-name {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
     color: var(--text-color);
+    line-height: 1.2;
   }
 
   .model-provider {
     color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .model-capabilities {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+    max-width: 200px;
+  }
+
+  .model-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
   }
 
   .quality-badge {
     background: var(--accent-color);
     color: white;
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .speed-badge {
+    padding: 0.25rem 0.7rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .speed-badge.fast {
+    background: #10B981;
+    color: white;
+  }
+
+  .speed-badge.medium {
+    background: #F59E0B;
+    color: white;
+  }
+
+  .speed-badge.slow {
+    background: #EF4444;
+    color: white;
   }
 
   .pricing-info {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
     margin-bottom: 1rem;
   }
 
@@ -347,37 +462,74 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0.75rem;
+    padding: 1rem 0.75rem;
     background: var(--background-secondary);
-    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
     text-align: center;
+    transition: all 0.2s ease;
+  }
+
+  .price-item:hover {
+    background: var(--card-bg);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+
+  .price-item.context-window {
+    border: 2px dashed var(--border-color);
   }
 
   .price-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .price-value {
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--primary-color);
+    margin-bottom: 0.25rem;
+  }
+
+  .price-subtext {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    font-weight: 500;
   }
 
   .model-notes {
-    padding: 0.75rem;
+    padding: 1rem;
     background: var(--background-secondary);
-    border-radius: 8px;
-    border-left: 3px solid var(--accent-color);
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-color);
+    transition: all 0.2s ease;
+  }
+
+  .model-notes:hover {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+  }
+
+  .notes-header {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .model-notes small {
     color: var(--text-secondary);
     font-style: italic;
+    line-height: 1.4;
   }
 
   /* Table Section */
@@ -425,6 +577,24 @@
 
     .pricing-info {
       grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .price-item {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .selected-model-card {
+      padding: 1rem;
+    }
+
+    .model-name {
+      font-size: 1.2rem;
+    }
+
+    .model-capabilities {
+      max-width: 150px;
+      font-size: 0.75rem;
     }
   }
 </style>
